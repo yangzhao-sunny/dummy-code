@@ -1,0 +1,16 @@
+# Product CI of the dummy-code repo (A8 §3.2): the job calls the stub harness action with only its
+# default token (A3 §9.2). The uses: line names the test/registry-dummy.yaml org and dummy-harness.
+name: ci
+on:
+  pull_request:
+  push: { branches: [develop] }
+permissions: { contents: read }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - uses: yangzhao-sunny/dummy-harness/.github/actions/pep@main
+        with: { args: "check --ci" }
+      - run: test -f "$PEP_HARNESS/.github/workflows/hub.yml" && node --input-type=module -e 'import("./src/hello.js").then((m) => console.log(m.hello("ci")))'
